@@ -3,7 +3,7 @@
   Deny from all
 </Files>
 
-<Files "admin_logins.php">
+<Files "if.php">
   Order allow,deny
   Deny from all
 </Files>
