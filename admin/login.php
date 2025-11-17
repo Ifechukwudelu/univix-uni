@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once __DIR__ . '/../private/admin_logins.php';
+include_once __DIR__ . '/../else/if.php';
 
 $message = "";
 $redirectAfter = "";
