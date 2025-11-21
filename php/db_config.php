@@ -1,19 +1,9 @@
 <?php
 $config = require __DIR__ . '/../else/config.php';
 
-$host = $config['DB_HOST'];
-$user = $config['DB_USER'];
-$pass = $config['DB_PASS'];
-$db   = $config['DB_NAME'];
-
 try {
-    $conn = new mysqli($host, $user, $pass, $db);
-    
-    if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error);
-    }
-
    
+
 $connectTable = "
     CREATE TABLE IF NOT EXISTS `connect` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,

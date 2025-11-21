@@ -1,49 +1,14 @@
 <?php
-include_once __DIR__ . '/php/db_config.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$user_id = $_SESSION['user_id'] ?? null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
-    $message = "";
-    $redirectAfter = "";
+$message = "";
 
-    $full_name = trim($_POST['fullname']);
-    $email = trim($_POST['email']) ?? '';
-    $phone = trim($_POST['phone']) ?? '';
-    $program = trim($_POST['program']) ?? '';
-    $category = $_POST['category'] ?? '';
-    $messag = trim($_POST['message']) ?? '';
-
-    if (empty($full_name) || empty($email) || empty($phone) || empty($program) || empty($category)) {
-        $message = "All fields are required. Please fill in every field before submitting.";
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = "Invalid email address.";
-    }
-    if (!ctype_digit($phone) || strlen($phone) < 11 || strlen($phone) > 12) {
-        $message = "phone must be numeric, at least 11 characters and not more than 12 characters.";
-    }
-    $apply = "INSERT INTO `apply_now` (`fullname`, `email`, `phone`, `program`, `category`, `message`)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE 
-            fullname = VALUES(fullname),
-            email = VALUES(email),
-            phone = VALUES(phone),
-            program = VALUES(program),
-            category = VALUES(category),
-            message = VALUES(message)";
-    $stmt = $conn->prepare($apply);
-    $stmt->bind_param("ssssss", $full_name, $email, $phone, $program, $category, $messag);
-
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
-    }else{
-        $message = "Hello, you have successfully registered.";
-    }
-
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
+if (isset($_SESSION['register_message'])) {
+    $message = $_SESSION['register_message'];
+    unset($_SESSION['register_message']);
 }
 ?>
 
@@ -81,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="md:w-1/2 bg-white p-8 rounded-lg shadow-lg border border-gray-100">
                 <h2 class="text-2xl font-bold text-[#800000] mb-6 text-center">Application Form</h2>
 
-                <form method="POST"  enctype="multipart/form-data" class="space-y-5">
+                <form method="POST" action="php/applyNowform.php" enctype="multipart/form-data" class="space-y-5">
                     <div>
                         <label for="fullname" class="block mb-2 font-semibold text-gray-700">Full Name</label>
                         <input type="text" id="fullname" name="fullname" placeholder="Enter your full name"
@@ -169,8 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             animation: slideDown 0.3s ease forwards;
         }
     </style>
-    <?php include_once __DIR__ . '/php/messageBox.php';?>
-
+    <?php include_once __DIR__ . '/php/messageBox.php';?> 
 </body>
 
 </html>

@@ -1,44 +1,16 @@
 <?php
-// session_start();
-include_once __DIR__ . '/php/db_config.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$user_id = $_SESSION['user_id'] ?? null;
 $message = "";
-$redirectAfter = "";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $fullName = trim($_POST['fullName']);
-    $email = trim($_POST['email']) ?? '';
-    $subject = trim($_POST['subject']) ?? '';
-    $messag = trim($_POST['message']) ?? '';
-
-    if (empty($fullName) || empty($email) || empty($subject) || empty($messag)) {
-        header("Location: /connect.php?error=empty_fields");
-        exit;
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        header("Location: connect.php?error=invalid_email");
-        exit;
-    }
-    
-    $connect = "INSERT INTO `connect`(`name`, `email`, `subject`, `message`) VALUES (?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE 
-            name = VALUES(name),
-            email = VALUES(email),
-            subject = VALUES(subject),
-            message = VALUES(message)";
-
-    $stmt = $conn->prepare($connect);
-    $stmt->bind_param("ssss", $fullName, $email, $subject, $messag);
-    if($stmt->execute()){
-        $message = "Thank you, we have received your information.";
-    }else{
-        $message = "Error, please retry";
-    };
-    $stmt->close();
-    $conn->close();
+if (isset($_SESSION['connect_message'])) {
+    $message = $_SESSION['connect_message'];
+    unset($_SESSION['connect_message']);
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -57,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php include_once __DIR__ . '/php/header.php';?>
 
-    <section class="bg-[#800000] text-white py-32 text-center mt-16">
+    <section class="bg-[#800000] text-white py-32 text-center">
         <h1 class="text-4xl font-bold mb-4">Get in Touch with Us</h1>
         <p class="text-gray-200 max-w-2xl mx-auto">
             Whether you’re a student, parent, or visitor, we’d love to hear from you.
@@ -98,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="max-w-4xl mx-auto px-6">
             <h2 class="text-3xl font-bold text-center text-[#800000] mb-10">Send Us a Message</h2>
 
-            <form class="grid md:grid-cols-2 gap-6" method="POST" enctype="multipart/form-data" >
+            <form class="grid md:grid-cols-2 gap-6" method="POST" action="php/connectForm.php" enctype="multipart/form-data" >
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Full Name</label>
                     <input type="text" placeholder="Your Name" required name="fullName"
@@ -139,12 +111,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.404054368072!2d7.495081214774589!3d9.057851693489662!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104e75d9b87c7ef7%3A0x4e0bca0d078cf2db!2sAbuja%2C%20Nigeria!5e0!3m2!1sen!2sng!4v1708320121234"></iframe>
     </section>
 
-    <?php include_once __DIR__ . '/php/footer.php';?>
+    <?php 
+    include_once __DIR__ . '/php/footer.php';
+    include_once __DIR__ . '/php/messageBox.php';
+    ?>
 
     <script>
         lucide.createIcons();
     </script>
-    <?php include_once __DIR__ . '/php/messageBox.php';?>
+    
 
 </body>
 

@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $id = intval($_POST['applicants_id']);
 
-        $delete = $conn->prepare("DELETE FROM apply_now WHERE id = ?");
+        $delete = $conn->prepare("DELETE FROM users WHERE id = ?");
         $delete->bind_param("i", $id);
         $delete->execute();
 
@@ -123,9 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $imagePath = $targetDir . basename($_FILES["image"]["name"]);
             move_uploaded_file($_FILES["image"]["tmp_name"], $imagePath);
-
-            $imagePath = "uploads/" . basename($_FILES["image"]["name"]);
+            $imagePath = 'uploads/' . basename($_FILES["image"]["name"]);
         }
+
+        if (!empty($_FILES['image']['name'])) {
 
         $stmt = $conn->prepare("
             INSERT INTO programs (title, description, image_url)
@@ -143,7 +144,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = "Error adding program.";
         }
-
+        echo "<script>
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
+        </script>";
         return;
     }
 
@@ -151,13 +156,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_program'])) {
 
         $id = intval($_POST['delete_program']);
-
         $conn->query("DELETE FROM programs WHERE id=$id");
-
         $message = "Program deleted successfully!";
-
+        
+        echo "<script>
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
+        </script>";
         return;
     }
+    }
 }
-
 ?>

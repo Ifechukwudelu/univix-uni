@@ -27,9 +27,9 @@
  
             <?php
             include_once __DIR__ . '/php/db_config.php';
-            $result = $conn->query("SELECT * FROM programs ORDER BY created_at DESC");
-            if ($result->num_rows > 0) {
-                while ($prog = $result->fetch_assoc()) {
+            $program_result = $conn->query("SELECT * FROM programs ORDER BY created_at DESC");
+            if ($program_result->num_rows > 0) {
+                while ($prog = $program_result->fetch_assoc()) {
                     echo "
                     <div class='bg-white shadow-lg rounded-lg p-6 hover:shadow-2xl transition'>
                         <img src='{$prog['image_url']}' alt='{$prog['title']}' class='rounded-md mb-4 h-[350px] w-full object-cover'>

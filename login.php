@@ -1,15 +1,20 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include_once __DIR__ . '/php/db_config.php';
+
 $message = "";
 $redirectAfter = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']) ?? '';
-    $category = $_POST['category'] ?? '';
-    
-    $sql = "SELECT id, fullname FROM apply_now WHERE email = ? AND category = ? LIMIT 1";
+
+    $email = trim($_POST['email']);
+    $category = trim($_POST['category']);
+
+    $sql = "SELECT id, fullname FROM users WHERE email = ? AND category = ? LIMIT 1";
     $stmt = $conn->prepare($sql);
+
     if (!$stmt) {
         die("Prepare failed: " . $conn->error);
     }
@@ -17,35 +22,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("ss", $email, $category);
     $stmt->execute();
     $result = $stmt->get_result();
-    
-    if ($result->num_rows > 0) {
+
+    if ($result->num_rows === 1) {
+
         $user = $result->fetch_assoc();
 
-        $_SESSION['user_id'] = $user['id'];  
+        $_SESSION['user_id'] = $user['id'];
+        // $_SESSION['fullname'] = $user['fullname'];
         $_SESSION['logged_in'] = true;
 
-        $loginStmt = $conn->prepare("INSERT INTO login (user_id, email, category) VALUES (?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            user_id = VALUES(user_id),
-            email = VALUES(email),
-            category = VALUES(category)");
+        $loginSql = "INSERT INTO login (user_id, email, category)
+                     VALUES (?, ?, ?)
+                     ON DUPLICATE KEY UPDATE
+                        email = VALUES(email),
+                        category = VALUES(category)";
+
+        $loginStmt = $conn->prepare($loginSql);
 
         if ($loginStmt) {
             $loginStmt->bind_param("iss", $user['id'], $email, $category);
             $loginStmt->execute();
             $loginStmt->close();
-
-            $message="Login successful!";
-            $redirectAfter = "index.php";
         }
+
+        $message = "Login successful!";
+        $redirectAfter = "index.php";
+
     } else {
-        $message="Invalid email or password!";
+        $message = "Invalid email or category!";
     }
 
     $stmt->close();
     $conn->close();
 }
-
 ?>
 
 

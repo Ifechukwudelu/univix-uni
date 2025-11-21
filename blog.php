@@ -23,21 +23,21 @@
     <?php
     include_once __DIR__ . '/php/db_config.php';
     $sql = "SELECT * FROM blog_posts WHERE status='approved' ORDER BY created_at DESC";
-    $result = $conn->query($sql);
+    $blog_result = $conn->query($sql);
     ?>
 
     <section class="py-20">
     <div class="max-w-6xl mx-auto py-12 px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <?php if ($result && $result->num_rows > 0): ?>
-        <?php while ($row = $result->fetch_assoc()): ?>
+        <?php if ($blog_result && $blog_result->num_rows > 0): ?>
+        <?php while ($blog_row = $blog_result->fetch_assoc()): ?>
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <?php if (!empty($row['image'])): ?>
-                <img src="<?= htmlspecialchars($row['image']) ?>" alt="Post image" class="w-full h-48 object-cover">
+            <?php if (!empty($blog_row['image'])): ?>
+                <img src="<?= htmlspecialchars($blog_row['image']) ?>" alt="Post image" class="w-full h-48 object-cover">
             <?php endif; ?>
             <div class="p-4">
-                <h3 class="font-bold text-xl text-[#800000] mb-2"><?= htmlspecialchars($row['topic']) ?></h3>
-                <p class="text-gray-700"><?= htmlspecialchars($row['description']) ?></p>
-                <p class="text-gray-600 text-sm mb-2"><?= htmlspecialchars($row['posted_by']) ?> | <?= htmlspecialchars($row['date_posted']) ?></p>
+                <h3 class="font-bold text-xl text-[#800000] mb-2"><?= htmlspecialchars($blog_row['topic']) ?></h3>
+                <p class="text-gray-700"><?= htmlspecialchars($blog_row['description']) ?></p>
+                <p class="text-gray-600 text-sm mb-2"><?= htmlspecialchars($blog_row['posted_by']) ?> | <?= htmlspecialchars($blog_row['date_posted']) ?></p>
             </div>
         </div>
         <?php endwhile; ?>
