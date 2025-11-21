@@ -60,20 +60,52 @@ $imgQuery->close();
                     <div class="mt-6">
                         <h4 class="font-semibold">Recent Activity</h4>
                         <div class="mt-3 space-y-3 max-h-40 overflow-auto">
-                            <?php
-                            $stmt = $conn->prepare("SELECT topic, date_posted, status FROM blog_posts WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
-                            $stmt->bind_param("i", $user_id);
-                            $stmt->execute();
-                            $res = $stmt->get_result();
-                            if ($res->num_rows) {
+                         <?php
+                             $combined = [];
+
+                             $vstm = $conn->prepare("SELECT staff_quote AS content, verified_at AS date_posted, status, 'verification' AS type
+                             FROM staff_verification 
+                             WHERE user_id = ? 
+                             ORDER BY verified_at DESC LIMIT 2");
+                             $vstm->bind_param("i", $user_id);
+                             $vstm->execute();
+                             $svy = $vstm->get_result();
+
+                               while ($s = $svy->fetch_assoc()) {
+                          $combined[] = $s;
+                                                                }
+
+                              $stmt = $conn->prepare("SELECT topic AS content, date_posted, status, 'blog' AS type
+                              FROM blog_posts 
+                              WHERE user_id = ? 
+                              ORDER BY created_at DESC LIMIT 5");
+                              $stmt->bind_param("i", $user_id);
+                              $stmt->execute();
+                              $res = $stmt->get_result();
+
                                 while ($r = $res->fetch_assoc()) {
-                                    echo "<div class='text-sm'><span class='font-semibold'>" . htmlspecialchars($r['topic']) . "</span> — <span class='text-gray-500'>{$r['date_posted']}</span> <span class='px-2 text-xs rounded bg-gray-100'>{$r['status']}</span></div>";
-                                }
-                            } else {
-                                echo "<div class='text-sm text-gray-500'>No recent posts</div>";
-                            }
-                            $stmt->close();
-                            ?>
+                           $combined[] = $r;
+                                                                 }
+
+                     usort($combined, function($a, $b) {
+                     return strtotime($b['date_posted']) - strtotime($a['date_posted']);
+                     });
+
+                
+                      if (!empty($combined)) {
+                      foreach ($combined as $row) {
+                    echo "<div class='text-sm'>
+                      <span class='font-semibold'>" . htmlspecialchars($row['content']) . "</span> 
+                      — <span class='text-gray-500'>{$row['date_posted']}</span> 
+                      <span class='px-2 text-xs rounded bg-gray-100'>{$row['status']}</span>
+                      <span class='ml-1 text-[10px] text-blue-500'>({$row['type']})</span>
+                    </div>";
+                   }
+                   } else {
+                  echo "<div class='text-sm text-gray-500'>No recent activity</div>";
+                   }
+                         ?>
+
                         </div>
                     </div>
                 </div>

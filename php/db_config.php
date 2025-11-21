@@ -1,8 +1,15 @@
 <?php
 $config = require __DIR__ . '/../else/config.php';
 
+$host = $config["DB_HOST"];
+$user = $config["DB_USER"];
+$pass = $config["DB_PASS"];
+$db = $config["DB_NAME"];
+
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) die("Local DB failed: " . $conn->connect_error);
+
 try {
-   
 
 $connectTable = "
 
