@@ -5,7 +5,8 @@ try {
    
 
 $connectTable = "
-    CREATE TABLE IF NOT EXISTS `connect` (
+
+CREATE TABLE IF NOT EXISTS `connect` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
@@ -14,23 +15,14 @@ $connectTable = "
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci; 
-";
-
-$loginTable = "
-    CREATE TABLE IF NOT EXISTS `login` (
-  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `email` varchar(100) NOT NULL,
-  `category` enum('Student','Staff') NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ";
 
 $applyNowTable = "
-    CREATE TABLE IF NOT EXISTS `apply_now` (
+
+CREATE TABLE IF NOT EXISTS `apply_now` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `fullname` varchar(150) NOT NULL,
   `email` varchar(100) NOT NULL,
   `phone` varchar(20) NOT NULL,
@@ -42,9 +34,37 @@ $applyNowTable = "
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ";
 
-$blogPostsTable = "
-    CREATE TABLE IF NOT EXISTS `blog_posts` (
+$loginTable = "
+
+CREATE TABLE IF NOT EXISTS `login` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `category` enum('Student','Staff') NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+";
+
+$usersTable = "
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fullname` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `program` varchar(255) DEFAULT NULL,
+  `category` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+";
+
+$blogPostsTable = "
+
+CREATE TABLE IF NOT EXISTS `blog_posts` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `topic` varchar(200) NOT NULL,
   `description` text NOT NULL,
@@ -59,8 +79,10 @@ $blogPostsTable = "
 ";
 
 $staffVerificationTable = "
-    CREATE TABLE IF NOT EXISTS `staff_verification` (
+
+CREATE TABLE IF NOT EXISTS `staff_verification` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `staff_image` varchar(255) NOT NULL,
   `staff_name` varchar(150) NOT NULL,
   `staff_post` varchar(150) NOT NULL,
@@ -74,6 +96,7 @@ $staffVerificationTable = "
 ";
 
 $programsTable ="
+
 CREATE TABLE IF NOT EXISTS `programs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
@@ -86,6 +109,7 @@ CREATE TABLE IF NOT EXISTS `programs` (
 ";
 
 $userImagetable = "
+
 CREATE TABLE IF NOT EXISTS `user_image` (
   `id` int(20) NOT NULL AUTO_INCREMENT,
   `user_id` int(20) DEFAULT NULL,
@@ -96,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `user_image` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ";
 
-$tables = [$connectTable, $loginTable, $applyNowTable, $blogPostsTable, $staffVerificationTable, $programsTable, $userImagetable]; 
+$tables = [$connectTable, $loginTable, $applyNowTable, $usersTable, $blogPostsTable, $staffVerificationTable, $programsTable, $userImagetable]; 
 
 foreach ($tables as $sql) {
    $conn->query($sql);
