@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $message = "Login successful!";
-        $redirectAfter = "index.php";
+        $redirectAfter = "profile.php";
 
     } else {
         $message = "Invalid email or category!";

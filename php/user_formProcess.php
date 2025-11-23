@@ -168,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sssssi", $fullname, $email, $phone, $program, $category, $user_id);
 
         if ($stmt->execute()) {
-            $message = "Hello $fullname, your profile has been updated.";
+            $message = "Updated, refresh to reflect.";
         } else {
             $message = "There was an error updating your profile.";
         }
